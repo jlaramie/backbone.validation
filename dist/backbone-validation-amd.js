@@ -1,6 +1,6 @@
 // Backbone.Validation v0.11.5
 //
-// Copyright (c) 2011-2015 Thomas Pedersen
+// Copyright (c) 2011-2017 Thomas Pedersen
 // Distributed under MIT License
 //
 // Documentation and full license available at:
@@ -316,15 +316,17 @@
             // Trigger validated events.
             // Need to defer this so the model is actually updated before
             // the event is triggered.
-            _.defer(function() {
-              model.trigger('validated', model._isValid, model, result.invalidAttrs);
-              model.trigger('validated:' + (model._isValid ? 'valid' : 'invalid'), model, result.invalidAttrs);
-            });
+            if (opt.silent !== true) {
+              _.defer(function() {
+                model.trigger('validated', model._isValid, model, result.invalidAttrs);
+                model.trigger('validated:' + (model._isValid ? 'valid' : 'invalid'), model, result.invalidAttrs);
+              });
+            }
   
             // Return any error messages to Backbone, unless the forceUpdate flag is set.
             // Then we do not return anything and fools Backbone to believe the validation was
             // a success. That way Backbone will update the model regardless.
-            if ((opt.forceReturn && _.keys(result.invalidAttrs).length > 0) || (!opt.forceUpdate && _.intersection(_.keys(result.invalidAttrs), _.keys(changedAttrs)).length > 0)) {
+            if (!opt.forceUpdate && _.intersection(_.keys(result.invalidAttrs), _.keys(changedAttrs)).length > 0) {
               return result.invalidAttrs;
             }
           }

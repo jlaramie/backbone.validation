@@ -302,10 +302,12 @@ Backbone.Validation = (function(_){
           // Trigger validated events.
           // Need to defer this so the model is actually updated before
           // the event is triggered.
-          _.defer(function() {
-            model.trigger('validated', model._isValid, model, result.invalidAttrs);
-            model.trigger('validated:' + (model._isValid ? 'valid' : 'invalid'), model, result.invalidAttrs);
-          });
+          if (opt.silent !== true) {
+            _.defer(function() {
+              model.trigger('validated', model._isValid, model, result.invalidAttrs);
+              model.trigger('validated:' + (model._isValid ? 'valid' : 'invalid'), model, result.invalidAttrs);
+            });
+          }
 
           // Return any error messages to Backbone, unless the forceUpdate flag is set.
           // Then we do not return anything and fools Backbone to believe the validation was
